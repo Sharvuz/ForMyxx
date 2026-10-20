@@ -2,241 +2,145 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌹 Happy Women's Day 20/10 🌹</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>20/10 🌹 Happy Vietnamese Women's Day</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;600;800&family=Playfair+Display:ital,wght@1,600;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Falling Petals Container -->
-    <div class="petals-container" id="petals"></div>
+    <!-- Background Canvas Layers -->
+    <canvas id="bgCanvas"></canvas>
+    <canvas id="gardenCanvas"></canvas>
+    <canvas id="fireworkCanvas"></canvas>
+    <canvas id="particleCanvas"></canvas>
 
-    <!-- Floating Hearts -->
-    <div class="hearts-container" id="hearts"></div>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
+    <!-- Main UI Overlay -->
+    <div class="ui-layer">
+        <!-- Minimalist Glowing Header -->
+        <header class="header">
             <div class="date-badge">
-                <span class="date-num">20</span>
-                <span class="date-slash">/</span>
-                <span class="date-num">10</span>
+                <span class="sparkle">✦</span>
+                <span class="date-text">20 . 10</span>
+                <span class="sparkle">✦</span>
             </div>
-            <h1 class="hero-title">
-                <span class="title-line line-1">Chúc Mừng</span>
-                <span class="title-line line-2">Ngày Phụ Nữ</span>
-                <span class="title-line line-3">Việt Nam</span>
-            </h1>
-            <div class="hero-flower-divider">
-                <span class="divider-line"></span>
-                <span class="divider-flower">🌸</span>
-                <span class="divider-line"></span>
-            </div>
-            <p class="hero-subtitle">Vietnamese Women's Day</p>
-            <div class="scroll-hint">
-                <span>❀</span>
-                <div class="scroll-arrow"></div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Message Section -->
-    <section class="message-section">
-        <div class="container">
-            <div class="message-card">
-                <div class="card-corner top-left"></div>
-                <div class="card-corner top-right"></div>
-                <div class="card-corner bottom-left"></div>
-                <div class="card-corner bottom-right"></div>
-                <div class="card-icon">💐</div>
-                <h2 class="message-title">Gửi Đến Những Người Phụ Nữ</h2>
-                <div class="message-divider">
-                    <span>✿</span>
-                </div>
-                <p class="message-text">
-                    Cảm ơn những người phụ nữ đã luôn yêu thương, hy sinh và cống hiến. 
-                    Các bạn chính là những bông hoa đẹp nhất, là nguồn cảm hứng bất tận 
-                    cho cuộc sống này.
-                </p>
-                <p class="message-text highlight">
-                    Chúc tất cả phụ nữ luôn tươi đẹp, hạnh phúc và thành công! 🌷
-                </p>
+            <!-- Personalized Recipient Banner (Hiển thị khi có tên) -->
+            <div class="recipient-banner" id="recipientBanner">
+                <span class="heart-icon">💖</span>
+                <span class="for-text">Dành tặng riêng:</span>
+                <span class="recipient-name" id="recipientNameText">Người Phụ Nữ Tuyệt Vời</span>
+                <span class="heart-icon">💖</span>
             </div>
-        </div>
-    </section>
 
-    <!-- Flower Gallery -->
-    <section class="gallery-section">
-        <h2 class="section-title">
-            <span class="title-icon">🌺</span>
-            Những Đoá Hoa Dành Tặng
-            <span class="title-icon">🌺</span>
-        </h2>
-        <div class="container">
-            <div class="flower-grid">
-                <div class="flower-card card-1">
-                    <div class="flower-emoji">🌹</div>
-                    <h3>Hoa Hồng</h3>
-                    <p>Tình yêu & Sự lãng mạn</p>
+            <h1 class="main-title">Happy Women's Day</h1>
+        </header>
+
+        <!-- Central Interactive 3D Glowing Rose -->
+        <div class="rose-container" id="centerRose">
+            <div class="glow-orb"></div>
+            <div class="rose-3d">
+                <div class="rose-core"></div>
+                <div class="ring ring-1">
+                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span>
                 </div>
-                <div class="flower-card card-2">
-                    <div class="flower-emoji">🌷</div>
-                    <h3>Hoa Tulip</h3>
-                    <p>Sự thanh lịch & Duyên dáng</p>
+                <div class="ring ring-2">
+                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span>
                 </div>
-                <div class="flower-card card-3">
-                    <div class="flower-emoji">🌸</div>
-                    <h3>Hoa Đào</h3>
-                    <p>Sự dịu dàng & Nữ tính</p>
+                <div class="ring ring-3">
+                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span>
                 </div>
-                <div class="flower-card card-4">
-                    <div class="flower-emoji">🌻</div>
-                    <h3>Hoa Hướng Dương</h3>
-                    <p>Niềm vui & Sự lạc quan</p>
-                </div>
-                <div class="flower-card card-5">
-                    <div class="flower-emoji">💮</div>
-                    <h3>Hoa Sen</h3>
-                    <p>Sự thanh cao & Thuần khiết</p>
-                </div>
-                <div class="flower-card card-6">
-                    <div class="flower-emoji">🌼</div>
-                    <h3>Hoa Cúc</h3>
-                    <p>Sự chung thuỷ & Bền bỉ</p>
+                <div class="ring ring-4">
+                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span>
                 </div>
             </div>
+            <div class="rose-hint">Chạm / Click để nở hoa ✨</div>
         </div>
-    </section>
 
-    <!-- Quotes Section -->
-    <section class="quotes-section">
-        <div class="container">
-            <h2 class="section-title light">
-                <span class="title-icon">✨</span>
-                Những Lời Hay Ý Đẹp
-                <span class="title-icon">✨</span>
-            </h2>
-            <div class="quotes-grid">
-                <div class="quote-card">
-                    <div class="quote-mark">"</div>
-                    <p class="quote-text">Phụ nữ là một nửa thế giới, nhưng lại là toàn bộ niềm hạnh phúc.</p>
-                    <div class="quote-flower">🌸</div>
-                </div>
-                <div class="quote-card">
-                    <div class="quote-mark">"</div>
-                    <p class="quote-text">Không có người phụ nữ nào yếu đuối, chỉ có những người phụ nữ chưa biết mình mạnh mẽ đến nhường nào.</p>
-                    <div class="quote-flower">🌹</div>
-                </div>
-                <div class="quote-card">
-                    <div class="quote-mark">"</div>
-                    <p class="quote-text">Bàn tay phụ nữ nâng đỡ cả thế giới, nhưng đôi khi chỉ cần một bông hoa để mỉm cười.</p>
-                    <div class="quote-flower">🌷</div>
+        <!-- Floating Quick Action Bar -->
+        <div class="actions-dock">
+            <!-- Nút Quyền Admin tạo thiệp -->
+            <button class="effect-btn admin-badge-btn" id="btnAdmin" title="Quyền Admin: Tạo link gửi tặng người ấy">
+                <span class="icon">👑</span>
+                <span class="label">Tạo Thiệp</span>
+            </button>
+            <button class="effect-btn" id="btnStorm" title="Mưa hoa bão tuyết">
+                <span class="icon">🌸</span>
+                <span class="label">Bão Hoa</span>
+            </button>
+            <button class="effect-btn" id="btnFireworks" title="Bắn pháo hoa hình hoa">
+                <span class="icon">🎆</span>
+                <span class="label">Pháo Hoa</span>
+            </button>
+            <button class="effect-btn" id="btnHearts" title="Trái tim bùng nổ">
+                <span class="icon">💖</span>
+                <span class="label">Mưa Tim</span>
+            </button>
+            <button class="effect-btn" id="btnGarden" title="Trồng vườn hoa tự động">
+                <span class="icon">🌷</span>
+                <span class="label">Nở Rộ</span>
+            </button>
+            <button class="effect-btn" id="btnAudio" title="Bật/Tắt âm thanh chuông">
+                <span class="icon">🔔</span>
+                <span class="label" id="audioLabel">Nhạc Chuông</span>
+            </button>
+            <button class="effect-btn danger" id="btnClear" title="Xoá hiệu ứng màn hình">
+                <span class="icon">✨</span>
+                <span class="label">Xoá Sạch</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Modal Popup (Giao diện cài đặt tên & tạo link) -->
+    <div class="modal-backdrop" id="adminModal">
+        <div class="modal-card">
+            <button class="close-modal-btn" id="btnCloseModal">✕</button>
+            
+            <div class="modal-header">
+                <div class="admin-crown">👑</div>
+                <h2>Bảng Điều Khiển Admin</h2>
+                <p>Nhập tên người bạn muốn gửi, hệ thống sẽ tạo link riêng để gửi người ấy!</p>
+            </div>
+
+            <div class="form-group">
+                <label for="adminNameInput">Tên người nhận (ví dụ: Em Lan, Bé Yêu, Mẹ Yêu...):</label>
+                <div class="input-wrap">
+                    <input type="text" id="adminNameInput" placeholder="Nhập tên người nhận vào đây..." maxlength="35" autocomplete="off">
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Wishes Section -->
-    <section class="wishes-section">
-        <div class="container">
-            <div class="wishes-wrapper">
-                <div class="wish-item">
-                    <div class="wish-icon">💖</div>
-                    <h3>Sức Khoẻ</h3>
-                    <p>Luôn khoẻ mạnh và tràn đầy năng lượng</p>
-                </div>
-                <div class="wish-item">
-                    <div class="wish-icon">🌟</div>
-                    <h3>Thành Công</h3>
-                    <p>Đạt được mọi ước mơ và hoài bão</p>
-                </div>
-                <div class="wish-item">
-                    <div class="wish-icon">🏠</div>
-                    <h3>Hạnh Phúc</h3>
-                    <p>Gia đình ấm áp và tràn ngập yêu thương</p>
-                </div>
-                <div class="wish-item">
-                    <div class="wish-icon">🦋</div>
-                    <h3>Tự Do</h3>
-                    <p>Tự tin toả sáng theo cách riêng của mình</p>
-                </div>
+            <div class="preview-box">
+                <div class="preview-label">Xem trước link chia sẻ:</div>
+                <div class="preview-url" id="previewUrlText">https://.../?to=...</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn preview-btn" id="btnApplyPreview">
+                    <span>👁️</span> Áp Dụng Thử
+                </button>
+                <button class="modal-btn copy-btn" id="btnCopyLink">
+                    <span>🔗</span> Copy Link Gửi Ngay
+                </button>
+            </div>
+
+            <div class="modal-footer-tip">
+                💡 Người nhận khi bấm vào link sẽ thấy ngay tên của họ toả sáng rực rỡ kèm hiệu ứng hoa rơi và pháo hoa!
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-flowers">
-            🌸 🌹 🌷 🌺 🌻 🌼 💐 🌸 🌹 🌷
-        </div>
-        <p class="footer-text">Happy Vietnamese Women's Day</p>
-        <p class="footer-date">20 . 10 . 2026</p>
-        <div class="footer-heart">
-            <span>Made with</span>
-            <span class="heart-beat">❤️</span>
-            <span>for all women</span>
-        </div>
-    </footer>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-msg" id="toastMsg">Đã sao chép link thành công!</span>
+    </div>
 
-    <script>
-        // === Falling Petals Effect ===
-        const petalsContainer = document.getElementById('petals');
-        const petalSymbols = ['🌸', '🌹', '🌷', '💮', '🏵️', '✿'];
-        
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            petal.textContent = petalSymbols[Math.floor(Math.random() * petalSymbols.length)];
-            petal.style.left = Math.random() * 100 + 'vw';
-            petal.style.fontSize = (Math.random() * 16 + 12) + 'px';
-            petal.style.animationDuration = (Math.random() * 5 + 6) + 's';
-            petal.style.animationDelay = Math.random() * 2 + 's';
-            petal.style.opacity = Math.random() * 0.6 + 0.4;
-            petalsContainer.appendChild(petal);
-            setTimeout(() => petal.remove(), 12000);
-        }
+    <!-- Interactive Hint Floating Pill -->
+    <div class="floating-tip" id="floatingTip">
+        <span>🌸 Nhấn bất kỳ đâu trên màn hình để nở hoa & phát nốt nhạc!</span>
+    </div>
 
-        setInterval(createPetal, 400);
-
-        // === Floating Hearts ===
-        const heartsContainer = document.getElementById('hearts');
-        const heartSymbols = ['💕', '💗', '💖', '💝', '💓'];
-
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.className = 'floating-heart';
-            heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 14 + 10) + 'px';
-            heart.style.animationDuration = (Math.random() * 4 + 5) + 's';
-            heart.style.opacity = Math.random() * 0.4 + 0.2;
-            heartsContainer.appendChild(heart);
-            setTimeout(() => heart.remove(), 10000);
-        }
-
-        setInterval(createHeart, 1500);
-
-        // === Scroll Reveal Animation ===
-        const observerOptions = {
-            threshold: 0.15,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.message-card, .flower-card, .quote-card, .wish-item, .section-title').forEach(el => {
-            el.classList.add('reveal-on-scroll');
-            observer.observe(el);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
