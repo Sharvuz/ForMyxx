@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>20/10 🌹 Happy Women's Day</title>
+    <title>20/10 🌹 Gửi Em Bé Ngóc | Happy Women's Day</title>
+    
+    <!-- Social Share Previews (Zalo, Messenger, iMessage, Telegram) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="20/10 🌹 Món Quà Dành Cho Em Bé Ngóc">
+    <meta property="og:description" content="Chạm để mở phong bì thư bí mật Anh Su gửi tặng em bé ngóc...">
+    <meta name="theme-color" content="#190212">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;800&family=Playfair+Display:ital,wght@1,600;1,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&family=Montserrat:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,6 +22,11 @@
     <canvas id="gardenCanvas"></canvas>
     <canvas id="fireworkCanvas"></canvas>
     <canvas id="particleCanvas"></canvas>
+
+    <!-- Floating Audio Toggle Button -->
+    <button class="music-toggle-btn" id="musicToggleBtn" title="Bật/Tắt nhạc nền lãng mạn">
+        <span class="music-icon" id="musicIcon">🎵</span>
+    </button>
 
     <!-- Main Stage Container -->
     <main class="ecard-stage">
@@ -29,7 +41,7 @@
 
                     <!-- Inner card peaking slightly -->
                     <div class="env-peek-card">
-                        <span class="peek-badge">20 . 10</span>
+                        <span class="peek-badge">20 . 10 💌 Bé Ngóc</span>
                     </div>
 
                     <!-- Folds -->
@@ -50,7 +62,7 @@
 
             <!-- Hint below envelope -->
             <div class="envelope-hint" id="envelopeHint">
-                <span class="hint-text">Chạm để mở 💌</span>
+                <span class="hint-text">Thư gửi Em Bé Ngóc 💌 Chạm để mở</span>
             </div>
         </div>
 
@@ -66,7 +78,7 @@
 
                 <!-- Recipient Name -->
                 <div class="recipient-wrap" id="recipientWrap">
-                    <div class="recipient-name" id="cardRecipientName">Em Lan</div>
+                    <div class="recipient-name" id="cardRecipientName">Em Bé Ngóc 💕</div>
                 </div>
 
                 <!-- Central 3D Glowing Rose -->
@@ -89,14 +101,46 @@
                     </div>
                 </div>
 
-                <!-- Title Only -->
+                <!-- Title -->
                 <h1 class="main-title">Happy Women's Day</h1>
 
-                <!-- Replay Button -->
-                <button class="replay-btn" id="btnReplay" title="Đóng & mở lại thiệp">
-                    <span class="replay-icon">↺</span>
-                    <span>Mở Lại Thiệp</span>
-                </button>
+                <!-- Romantic Letter Card -->
+                <div class="letter-card" id="letterCard">
+                    <div class="letter-ornament">
+                        <span class="gold-line"></span>
+                        <span class="letter-badge">💌 Lời Chúc Yêu Thương</span>
+                        <span class="gold-line"></span>
+                    </div>
+
+                    <div class="letter-body">
+                        <p class="letter-line line-1" id="letterLine1">
+                            Ngày của em bé ngóc. 🌸
+                        </p>
+                        <p class="letter-line line-2" id="letterLine2">
+                            Anh Su yêu thương em! ❤️
+                        </p>
+                        <p class="letter-line line-3" id="letterLine3">
+                            Chúc em mãi mãi xinh đẹp, hạnh phúc trên con đường của mình. ✨
+                        </p>
+                    </div>
+
+                    <div class="letter-signature">
+                        <span class="sig-note">Gửi từ trọn con tim,</span>
+                        <span class="sig-author" id="sigAuthor">Anh Su 💖</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card-actions">
+                    <button class="action-btn replay-btn" id="btnReplay" title="Đóng & mở lại thiệp">
+                        <span class="replay-icon">↺</span>
+                        <span>Mở Lại</span>
+                    </button>
+                    <button class="action-btn love-btn" id="btnSendLove" title="Gửi tim & pháo hoa">
+                        <span class="heart-icon">💖</span>
+                        <span>Gửi Tim Cho Anh Su</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -115,20 +159,27 @@
             
             <div class="modal-header">
                 <div class="admin-crown">👑</div>
-                <h2>Bảng Quản Trị Admin</h2>
-                <p>Nhập tên người nhận để tạo link riêng bí mật gửi người ấy!</p>
+                <h2>Bảng Quản Trị Thiệp</h2>
+                <p>Tùy chỉnh thông tin người nhận & lời chúc gửi người ấy!</p>
             </div>
 
             <div class="form-group">
-                <label for="adminNameInput">Tên người nhận (ví dụ: Em Lan, Bé Yêu, Mẹ Yêu...):</label>
+                <label for="adminNameInput">Tên người nhận:</label>
                 <div class="input-wrap">
-                    <input type="text" id="adminNameInput" placeholder="Nhập tên người nhận..." maxlength="35" autocomplete="off">
+                    <input type="text" id="adminNameInput" placeholder="Ví dụ: Em Bé Ngóc..." maxlength="35" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="adminSenderInput">Tên người gửi:</label>
+                <div class="input-wrap">
+                    <input type="text" id="adminSenderInput" placeholder="Ví dụ: Anh Su..." maxlength="35" autocomplete="off">
                 </div>
             </div>
 
             <div class="preview-box">
-                <div class="preview-label">Link chia sẻ riêng (Không kèm quyền Admin):</div>
-                <div class="preview-url" id="previewUrlText">https://.../?to=...</div>
+                <div class="preview-label">Link chia sẻ trực tiếp (Không có quyền Admin):</div>
+                <div class="preview-url" id="previewUrlText">https://...</div>
             </div>
 
             <div class="modal-actions">
@@ -141,7 +192,7 @@
             </div>
 
             <div class="modal-footer-tip">
-                💡 Người nhận bấm vào link sẽ thấy ngay thiệp được cá nhân hoá riêng cho họ mà không thấy bất kỳ nút Admin nào!
+                💡 Người nhận bấm vào link sẽ thấy ngay bức thư ngọt ngào mà không thấy bất kỳ nút Admin nào!
             </div>
         </div>
     </div>

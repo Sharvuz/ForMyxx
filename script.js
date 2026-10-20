@@ -1,7 +1,8 @@
 /**
  * 🌹 20/10 SPECIAL VISUAL FX - INTERACTIVE E-CARD
+ * Dedicated to "Em Bé Ngóc" from "Anh Su"
  * Pure Visual Focus: 3D Envelope, Glowing Blooming Rose,
- * Web Audio Crystal Chimes, Floral Fireworks, Cursor Trail & Hidden Admin
+ * Web Audio Crystal Chimes & Romantic Melody, Floral Fireworks, Cursor Trail & Hidden Admin
  */
 
 // ================= GLOBAL SETUP & RESIZING =================
@@ -100,11 +101,107 @@ function playCrystalChord() {
                 harmonic.start(now);
                 osc.stop(now + 1.9);
                 harmonic.stop(now + 1.9);
-            }, idx * 100);
+            }, idx * 90);
         });
     } catch (e) {
         // Ignore audio errors
     }
+}
+
+// ================= ROMANTIC BACKGROUND MUSIC (MUSIC BOX) =================
+const MELODY_SEQUENCE = [
+    523.25, 659.25, 783.99, 659.25,
+    587.33, 523.25, 440.00, 523.25,
+    659.25, 587.33, 523.25, 392.00,
+    440.00, 523.25, 659.25, 783.99,
+    880.00, 783.99, 659.25, 587.33,
+    523.25, 659.25, 587.33, 523.25
+];
+let melodyIdx = 0;
+let melodyInterval = null;
+
+function playMelodyNote(freq) {
+    if (!audioEnabled || !audioCtx || audioCtx.state !== 'running') return;
+    try {
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.05, now + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 1.15);
+        osc2.stop(now + 1.15);
+    } catch (e) {}
+}
+
+const musicToggleBtn = document.getElementById('musicToggleBtn');
+const musicIcon = document.getElementById('musicIcon');
+
+function updateMusicIcon(isPlaying) {
+    if (musicIcon) {
+        musicIcon.textContent = isPlaying ? '🎵' : '🔇';
+    }
+    if (musicToggleBtn) {
+        if (isPlaying) {
+            musicToggleBtn.classList.add('playing');
+        } else {
+            musicToggleBtn.classList.remove('playing');
+        }
+    }
+}
+
+function startBackgroundMusic() {
+    if (melodyInterval) return;
+    initAudio();
+    audioEnabled = true;
+    melodyInterval = setInterval(() => {
+        if (!audioEnabled) return;
+        const freq = MELODY_SEQUENCE[melodyIdx];
+        playMelodyNote(freq);
+        melodyIdx = (melodyIdx + 1) % MELODY_SEQUENCE.length;
+    }, 540);
+    updateMusicIcon(true);
+}
+
+function stopBackgroundMusic() {
+    if (melodyInterval) {
+        clearInterval(melodyInterval);
+        melodyInterval = null;
+    }
+    updateMusicIcon(false);
+}
+
+function toggleMusic() {
+    initAudio();
+    if (melodyInterval) {
+        stopBackgroundMusic();
+        showToast('Đã tạm tắt nhạc nền', '🔇');
+    } else {
+        startBackgroundMusic();
+        showToast('Đang phát nhạc nền lãng mạn 🎵', '✨');
+    }
+}
+
+if (musicToggleBtn) {
+    musicToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMusic();
+    });
 }
 
 // Unlock audio on first user touch or click
@@ -513,7 +610,10 @@ window.addEventListener('pointerdown', (e) => {
         e.target.closest('#centerRose') ||
         e.target.closest('#dateBadge') ||
         e.target.closest('#btnReplay') ||
+        e.target.closest('#btnSendLove') ||
+        e.target.closest('#letterCard') ||
         e.target.closest('#secretAdminBtn') ||
+        e.target.closest('#musicToggleBtn') ||
         e.target.closest('.modal-card') ||
         (adminModal && adminModal.classList.contains('open'))
     ) {
@@ -533,6 +633,7 @@ const envelopeContainer = document.getElementById('envelopeContainer');
 const envelopeHint = document.getElementById('envelopeHint');
 const cardScene = document.getElementById('cardScene');
 const btnReplay = document.getElementById('btnReplay');
+const btnSendLove = document.getElementById('btnSendLove');
 const centerRose = document.getElementById('centerRose');
 
 let isOpening = false;
@@ -544,8 +645,9 @@ function openEnvelope() {
     // Trigger opening animation on envelope
     envelopeContainer.classList.add('opening');
 
-    // Crystal melody
+    // Crystal melody and romantic ambient music
     playCrystalChord();
+    startBackgroundMusic();
 
     // Petal & sparkle bursts at envelope center
     const rect = envelopeContainer.getBoundingClientRect();
@@ -553,7 +655,7 @@ function openEnvelope() {
     const cy = rect.top + rect.height / 2;
     createPetalBurst(cx, cy, 30);
     createPetalBurst(cx, cy, 14, '🌸');
-    createPetalBurst(cx, cy, 10, '💖');
+    createPetalBurst(cx, cy, 12, '💖');
 
     // Launch celebratory fireworks
     launchFireworks(4);
@@ -566,7 +668,7 @@ function openEnvelope() {
         // Blooming celebration around card
         spawnFlower(cx - Math.min(140, width * 0.25), cy + 40);
         spawnFlower(cx + Math.min(140, width * 0.25), cy + 40);
-        createPetalBurst(cx, cy, 20, '✨');
+        createPetalBurst(cx, cy, 22, '✨');
         isOpening = false;
     }, 750);
 }
@@ -607,18 +709,39 @@ if (centerRose) {
     });
 }
 
+// Send Love Button Interaction
+if (btnSendLove) {
+    btnSendLove.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rect = btnSendLove.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        playCrystalChord();
+        createPetalBurst(cx, cy, 32, '💖');
+        createPetalBurst(cx, cy, 20, '💕');
+        createPetalBurst(cx, cy, 15, '🌸');
+        createPetalBurst(cx, cy, 14, '✨');
+        launchFireworks(5);
+
+        showToast('Anh Su đã nhận được triệu trái tim từ em bé ngóc! 🥰❤️', '💖');
+    });
+}
+
 // ================= RECIPIENT & ADMIN LOGIC =================
 const cardRecipientName = document.getElementById('cardRecipientName');
 const secretAdminBtn = document.getElementById('secretAdminBtn');
 const adminModal = document.getElementById('adminModal');
 const btnCloseModal = document.getElementById('btnCloseModal');
 const adminNameInput = document.getElementById('adminNameInput');
+const adminSenderInput = document.getElementById('adminSenderInput');
 const previewUrlText = document.getElementById('previewUrlText');
 const btnApplyPreview = document.getElementById('btnApplyPreview');
 const btnCopyLink = document.getElementById('btnCopyLink');
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 const dateBadge = document.getElementById('dateBadge');
+const sigAuthor = document.getElementById('sigAuthor');
 
 let toastTimeout = null;
 
@@ -632,7 +755,7 @@ function showToast(message, icon = '✅') {
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
-    }, 3000);
+    }, 3200);
 }
 
 function getBaseUrl() {
@@ -643,64 +766,86 @@ function getBaseUrl() {
 }
 
 // Generate link strictly WITHOUT ?admin=true
-function generateShareUrl(name) {
+function generateShareUrl(name, sender) {
     const base = getBaseUrl();
-    const trimmed = (name || '').trim();
-    if (!trimmed) {
-        return `${base}?to=...`;
+    const params = new URLSearchParams();
+    if (name && name.trim()) {
+        params.set('to', name.trim());
     }
-    return `${base}?to=${encodeURIComponent(trimmed)}`;
+    if (sender && sender.trim() && sender.trim() !== 'Anh Su') {
+        params.set('from', sender.trim());
+    }
+    const query = params.toString();
+    return query ? `${base}?${query}` : base;
 }
 
-function updatePreviewUrl(name) {
+function updatePreviewUrl() {
     if (previewUrlText) {
-        previewUrlText.textContent = generateShareUrl(name);
+        const nameVal = adminNameInput ? adminNameInput.value : '';
+        const senderVal = adminSenderInput ? adminSenderInput.value : '';
+        previewUrlText.textContent = generateShareUrl(nameVal, senderVal);
     }
 }
 
-function setRecipient(name) {
-    const resolvedName = (name || '').trim() || 'Người Phụ Nữ Tuyệt Vời';
+function setRecipientAndSender(toName, fromName) {
+    const resolvedTo = (toName || '').trim() || 'Em Bé Ngóc';
+    const resolvedFrom = (fromName || '').trim() || 'Anh Su';
+
     if (cardRecipientName) {
-        cardRecipientName.textContent = resolvedName;
+        cardRecipientName.textContent = `${resolvedTo} 💕`;
     }
-    document.title = `20/10 🌹 ${resolvedName} | Happy Women's Day`;
+    if (sigAuthor) {
+        sigAuthor.textContent = `${resolvedFrom} 💖`;
+    }
+
+    document.title = `20/10 🌹 Gửi ${resolvedTo} | Happy Women's Day`;
+
+    // Update peek card and hint
+    const peek = document.querySelector('.peek-badge');
+    if (peek) {
+        peek.textContent = `20 . 10 💌 ${resolvedTo}`;
+    }
+    const hint = document.getElementById('envelopeHint');
+    if (hint) {
+        hint.innerHTML = `<span class="hint-text">Thư gửi ${resolvedTo} 💌 Chạm để mở</span>`;
+    }
 }
 
-function getRecipientFromUrl() {
+function getUrlParams() {
     try {
         const params = new URLSearchParams(window.location.search);
-        let name = params.get('to') || params.get('name');
-        if (!name) return null;
-        try {
-            name = decodeURIComponent(name.replace(/\+/g, ' '));
-        } catch (e) {
-            // keep raw
+        let to = params.get('to') || params.get('name');
+        let from = params.get('from');
+
+        if (to) {
+            try { to = decodeURIComponent(to.replace(/\+/g, ' ')).trim(); } catch (e) {}
         }
-        return name.trim() || null;
+        if (from) {
+            try { from = decodeURIComponent(from.replace(/\+/g, ' ')).trim(); } catch (e) {}
+        }
+        return { to, from };
     } catch (e) {
-        return null;
+        return { to: null, from: null };
     }
 }
 
 function openAdminModal() {
     if (!adminModal) return;
 
-    if (!adminNameInput.value) {
-        const currentName = cardRecipientName ? cardRecipientName.textContent.trim() : '';
-        if (currentName && currentName !== 'Người Phụ Nữ Tuyệt Vời') {
-            adminNameInput.value = currentName;
-        }
+    if (adminNameInput && !adminNameInput.value) {
+        adminNameInput.value = 'Em Bé Ngóc';
+    }
+    if (adminSenderInput && !adminSenderInput.value) {
+        adminSenderInput.value = 'Anh Su';
     }
 
-    updatePreviewUrl(adminNameInput.value);
+    updatePreviewUrl();
     adminModal.classList.add('open');
 
     setTimeout(() => {
         if (adminNameInput) {
             adminNameInput.focus();
-            if (adminNameInput.value) {
-                adminNameInput.select();
-            }
+            adminNameInput.select();
         }
     }, 120);
 }
@@ -715,7 +860,7 @@ function unlockAdmin() {
     if (secretAdminBtn) {
         secretAdminBtn.classList.add('visible');
     }
-    showToast('👑 Đã mở khóa Bảng Quản Trị Admin!', '✨');
+    showToast('👑 Đã mở khóa Bảng Quản Trị Thiệp!', '✨');
     setTimeout(() => {
         openAdminModal();
     }, 350);
@@ -772,12 +917,9 @@ function fallbackCopyText(text) {
 }
 
 async function handleCopyLink() {
-    const rawName = adminNameInput.value.trim() ||
-        (cardRecipientName ? cardRecipientName.textContent.trim() : '') ||
-        'Người Phụ Nữ Tuyệt Vời';
-
-    const base = getBaseUrl();
-    const finalUrl = `${base}?to=${encodeURIComponent(rawName)}`;
+    const rawTo = adminNameInput ? adminNameInput.value.trim() : 'Em Bé Ngóc';
+    const rawFrom = adminSenderInput ? adminSenderInput.value.trim() : 'Anh Su';
+    const finalUrl = generateShareUrl(rawTo, rawFrom);
 
     let copied = false;
     if (navigator.clipboard && window.isSecureContext) {
@@ -816,40 +958,36 @@ window.addEventListener('keydown', (e) => {
 });
 
 if (adminNameInput) {
-    adminNameInput.addEventListener('input', () => {
-        updatePreviewUrl(adminNameInput.value);
-    });
+    adminNameInput.addEventListener('input', updatePreviewUrl);
     adminNameInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            if (btnApplyPreview) btnApplyPreview.click();
-        }
+        if (e.key === 'Enter' && btnApplyPreview) btnApplyPreview.click();
+    });
+}
+if (adminSenderInput) {
+    adminSenderInput.addEventListener('input', updatePreviewUrl);
+    adminSenderInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && btnApplyPreview) btnApplyPreview.click();
     });
 }
 
 if (btnApplyPreview) {
     btnApplyPreview.addEventListener('click', () => {
-        const name = adminNameInput.value.trim();
-        if (!name) {
-            adminNameInput.focus();
-            showToast('Vui lòng nhập tên người nhận!', '⚠️');
-            return;
-        }
+        const to = adminNameInput ? adminNameInput.value.trim() : '';
+        const from = adminSenderInput ? adminSenderInput.value.trim() : '';
 
-        setRecipient(name);
+        setRecipientAndSender(to, from);
 
         try {
-            const base = getBaseUrl();
-            const newUrl = `${base}?to=${encodeURIComponent(name)}`;
+            const newUrl = generateShareUrl(to, from);
             window.history.replaceState({}, '', newUrl);
         } catch (e) {}
 
         closeAdminModal();
-        // Replay opening to see the personalized card bloom
         replayCard();
         setTimeout(() => {
             openEnvelope();
         }, 400);
-        showToast(`Đã áp dụng tặng: "${name}"`, '🌹');
+        showToast(`Đã áp dụng tặng: "${to || 'Em Bé Ngóc'}"`, '🌹');
     });
 }
 
@@ -860,17 +998,14 @@ if (btnCopyLink) {
 // ================= INITIALIZATION =================
 const urlParams = new URLSearchParams(window.location.search);
 const isAdminParam = urlParams.get('admin') === 'true';
-const initialName = getRecipientFromUrl();
+const { to: urlTo, from: urlFrom } = getUrlParams();
 
-// Set initial recipient name
-if (initialName) {
-    setRecipient(initialName);
-    if (adminNameInput) adminNameInput.value = initialName;
-    updatePreviewUrl(initialName);
-} else {
-    setRecipient('Người Phụ Nữ Tuyệt Vời');
-    updatePreviewUrl('');
-}
+// Set initial recipient and sender
+setRecipientAndSender(urlTo, urlFrom);
+
+if (adminNameInput) adminNameInput.value = urlTo || 'Em Bé Ngóc';
+if (adminSenderInput) adminSenderInput.value = urlFrom || 'Anh Su';
+updatePreviewUrl();
 
 // Handle Admin Query Parameter ?admin=true
 if (isAdminParam) {
