@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>20/10 🌹 Happy Vietnamese Women's Day</title>
+    <title>20/10 🌹 Happy Women's Day</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;600;800&family=Playfair+Display:ital,wght@1,600;1,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;800&family=Playfair+Display:ital,wght@1,600;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,116 +16,132 @@
     <canvas id="fireworkCanvas"></canvas>
     <canvas id="particleCanvas"></canvas>
 
-    <!-- Main UI Overlay -->
-    <div class="ui-layer">
-        <!-- Minimalist Glowing Header -->
-        <header class="header">
-            <div class="date-badge">
-                <span class="sparkle">✦</span>
-                <span class="date-text">20 . 10</span>
-                <span class="sparkle">✦</span>
+    <!-- Main Stage Container -->
+    <main class="ecard-stage">
+
+        <!-- ================= MÀN 1: PHONG BÌ SÁP NIÊM PHONG (CLOSED ENVELOPE) ================= -->
+        <div class="envelope-scene active" id="envelopeScene">
+            <div class="envelope-container" id="envelopeContainer" title="Chạm để mở">
+                <div class="envelope-glow"></div>
+                <div class="envelope-3d">
+                    <!-- Envelope interior pocket -->
+                    <div class="env-interior"></div>
+
+                    <!-- Inner card peaking slightly -->
+                    <div class="env-peek-card">
+                        <span class="peek-badge">20 . 10</span>
+                    </div>
+
+                    <!-- Folds -->
+                    <div class="env-fold fold-left"></div>
+                    <div class="env-fold fold-right"></div>
+                    <div class="env-fold fold-bottom"></div>
+
+                    <!-- 3D Flap -->
+                    <div class="env-flap" id="envelopeFlap"></div>
+
+                    <!-- Wax Seal -->
+                    <div class="wax-seal" id="waxSeal">
+                        <div class="wax-border"></div>
+                        <span class="wax-icon">🌹</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Personalized Recipient Banner (Hiển thị khi có tên) -->
-            <div class="recipient-banner" id="recipientBanner">
-                <span class="heart-icon">💖</span>
-                <span class="for-text">Dành tặng riêng:</span>
-                <span class="recipient-name" id="recipientNameText">Người Phụ Nữ Tuyệt Vời</span>
-                <span class="heart-icon">💖</span>
+            <!-- Hint below envelope -->
+            <div class="envelope-hint" id="envelopeHint">
+                <span class="hint-text">Chạm để mở 💌</span>
             </div>
-
-            <h1 class="main-title">Happy Women's Day</h1>
-        </header>
-
-        <!-- Central Interactive 3D Glowing Rose -->
-        <div class="rose-container" id="centerRose">
-            <div class="glow-orb"></div>
-            <div class="rose-3d">
-                <div class="rose-core"></div>
-                <div class="ring ring-1">
-                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span>
-                </div>
-                <div class="ring ring-2">
-                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span>
-                </div>
-                <div class="ring ring-3">
-                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span>
-                </div>
-                <div class="ring ring-4">
-                    <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span>
-                </div>
-            </div>
-            <div class="rose-hint">Chạm / Click để nở hoa ✨</div>
         </div>
 
-        <!-- Floating Quick Action Bar -->
-        <div class="actions-dock">
-            <!-- Nút Quyền Admin tạo thiệp -->
-            <button class="effect-btn admin-badge-btn" id="btnAdmin" title="Quyền Admin: Tạo link gửi tặng người ấy">
-                <span class="icon">👑</span>
-                <span class="label">Tạo Thiệp</span>
-            </button>
-            <button class="effect-btn" id="btnStorm" title="Mưa hoa bão tuyết">
-                <span class="icon">🌸</span>
-                <span class="label">Bão Hoa</span>
-            </button>
-            <button class="effect-btn" id="btnFireworks" title="Bắn pháo hoa hình hoa">
-                <span class="icon">🎆</span>
-                <span class="label">Pháo Hoa</span>
-            </button>
-            <button class="effect-btn" id="btnHearts" title="Trái tim bùng nổ">
-                <span class="icon">💖</span>
-                <span class="label">Mưa Tim</span>
-            </button>
-            <button class="effect-btn" id="btnGarden" title="Trồng vườn hoa tự động">
-                <span class="icon">🌷</span>
-                <span class="label">Nở Rộ</span>
-            </button>
-            <button class="effect-btn" id="btnAudio" title="Bật/Tắt âm thanh chuông">
-                <span class="icon">🔔</span>
-                <span class="label" id="audioLabel">Nhạc Chuông</span>
-            </button>
-            <button class="effect-btn danger" id="btnClear" title="Xoá hiệu ứng màn hình">
-                <span class="icon">✨</span>
-                <span class="label">Xoá Sạch</span>
-            </button>
-        </div>
-    </div>
+        <!-- ================= MÀN 2: THIỆP MỞ RA (OPENED E-CARD) ================= -->
+        <div class="card-scene" id="cardScene">
+            <div class="card-modal" id="cardModal">
+                <!-- Golden Date Badge (Click 5 times for Secret Admin) -->
+                <div class="date-badge" id="dateBadge" title="20 . 10">
+                    <span class="sparkle">✦</span>
+                    <span class="date-text">20 . 10</span>
+                    <span class="sparkle">✦</span>
+                </div>
 
-    <!-- Admin Modal Popup (Giao diện cài đặt tên & tạo link) -->
+                <!-- Recipient Name -->
+                <div class="recipient-wrap" id="recipientWrap">
+                    <div class="recipient-name" id="cardRecipientName">Em Lan</div>
+                </div>
+
+                <!-- Central 3D Glowing Rose -->
+                <div class="rose-container" id="centerRose" title="Chạm để bung nở hoa & pháo hoa">
+                    <div class="glow-orb"></div>
+                    <div class="rose-3d">
+                        <div class="rose-core"></div>
+                        <div class="ring ring-1">
+                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span>
+                        </div>
+                        <div class="ring ring-2">
+                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span>
+                        </div>
+                        <div class="ring ring-3">
+                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span>
+                        </div>
+                        <div class="ring ring-4">
+                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title Only -->
+                <h1 class="main-title">Happy Women's Day</h1>
+
+                <!-- Replay Button -->
+                <button class="replay-btn" id="btnReplay" title="Đóng & mở lại thiệp">
+                    <span class="replay-icon">↺</span>
+                    <span>Mở Lại Thiệp</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= BẢO MẬT ADMIN (ẨN HOÀN TOÀN) ================= -->
+    <!-- Nút Admin chỉ hiển thị khi ?admin=true hoặc sau 5 click vào badge 20/10 -->
+    <button class="secret-admin-btn" id="secretAdminBtn" title="Bảng quản trị Admin">
+        <span>👑 Admin</span>
+    </button>
+
+    <!-- Admin Modal -->
     <div class="modal-backdrop" id="adminModal">
         <div class="modal-card">
             <button class="close-modal-btn" id="btnCloseModal">✕</button>
             
             <div class="modal-header">
                 <div class="admin-crown">👑</div>
-                <h2>Bảng Điều Khiển Admin</h2>
-                <p>Nhập tên người bạn muốn gửi, hệ thống sẽ tạo link riêng để gửi người ấy!</p>
+                <h2>Bảng Quản Trị Admin</h2>
+                <p>Nhập tên người nhận để tạo link riêng bí mật gửi người ấy!</p>
             </div>
 
             <div class="form-group">
                 <label for="adminNameInput">Tên người nhận (ví dụ: Em Lan, Bé Yêu, Mẹ Yêu...):</label>
                 <div class="input-wrap">
-                    <input type="text" id="adminNameInput" placeholder="Nhập tên người nhận vào đây..." maxlength="35" autocomplete="off">
+                    <input type="text" id="adminNameInput" placeholder="Nhập tên người nhận..." maxlength="35" autocomplete="off">
                 </div>
             </div>
 
             <div class="preview-box">
-                <div class="preview-label">Xem trước link chia sẻ:</div>
+                <div class="preview-label">Link chia sẻ riêng (Không kèm quyền Admin):</div>
                 <div class="preview-url" id="previewUrlText">https://.../?to=...</div>
             </div>
 
             <div class="modal-actions">
                 <button class="modal-btn preview-btn" id="btnApplyPreview">
-                    <span>👁️</span> Áp Dụng Thử
+                    <span>👁️</span> Xem Thử
                 </button>
                 <button class="modal-btn copy-btn" id="btnCopyLink">
-                    <span>🔗</span> Copy Link Gửi Ngay
+                    <span>🔗</span> Copy Link Gửi Người Ấy
                 </button>
             </div>
 
             <div class="modal-footer-tip">
-                💡 Người nhận khi bấm vào link sẽ thấy ngay tên của họ toả sáng rực rỡ kèm hiệu ứng hoa rơi và pháo hoa!
+                💡 Người nhận bấm vào link sẽ thấy ngay thiệp được cá nhân hoá riêng cho họ mà không thấy bất kỳ nút Admin nào!
             </div>
         </div>
     </div>
@@ -134,11 +150,6 @@
     <div class="toast" id="toast">
         <span class="toast-icon">✅</span>
         <span class="toast-msg" id="toastMsg">Đã sao chép link thành công!</span>
-    </div>
-
-    <!-- Interactive Hint Floating Pill -->
-    <div class="floating-tip" id="floatingTip">
-        <span>🌸 Nhấn bất kỳ đâu trên màn hình để nở hoa & phát nốt nhạc!</span>
     </div>
 
     <script src="script.js"></script>

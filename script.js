@@ -1,7 +1,7 @@
 /**
- * 🌹 20/10 SPECIAL VISUAL FX - SCRIPT
- * Full Canvas Particles, Procedural Flowers, Floral Fireworks & Web Audio
- * Includes Personalized Recipient Banner & Admin Modal Sharing
+ * 🌹 20/10 SPECIAL VISUAL FX - INTERACTIVE E-CARD
+ * Pure Visual Focus: 3D Envelope, Glowing Blooming Rose,
+ * Web Audio Crystal Chimes, Floral Fireworks, Cursor Trail & Hidden Admin
  */
 
 // ================= GLOBAL SETUP & RESIZING =================
@@ -42,6 +42,7 @@ function initAudio() {
     }
 }
 
+// Gentle crystal chime for taps
 function playChime(noteFreq = null) {
     if (!audioEnabled) return;
     try {
@@ -53,32 +54,60 @@ function playChime(noteFreq = null) {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-        // Soft gentle bell chime curve
         gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.03);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
         osc.start();
-        osc.stop(audioCtx.currentTime + 1.3);
+        osc.stop(audioCtx.currentTime + 1.25);
     } catch (e) {
-        // audio might be blocked by browser until first interaction
+        // Audio might be waiting for user interaction
     }
 }
 
-function playChord() {
+// Celestial crystal harp arpeggio when opening envelope
+function playCrystalChord() {
     if (!audioEnabled) return;
-    [0, 2, 4].forEach((offset, idx) => {
-        setTimeout(() => {
-            const base = 4;
-            playChime(PENTATONIC_SCALE[base + offset] || 523.25);
-        }, idx * 90);
-    });
+    try {
+        initAudio();
+        const arpeggio = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
+        arpeggio.forEach((freq, idx) => {
+            setTimeout(() => {
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const harmonic = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                harmonic.type = 'triangle';
+                harmonic.frequency.setValueAtTime(freq * 2, audioCtx.currentTime);
+
+                const now = audioCtx.currentTime;
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.15, now + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+                osc.connect(gain);
+                harmonic.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                harmonic.start(now);
+                osc.stop(now + 1.9);
+                harmonic.stop(now + 1.9);
+            }, idx * 100);
+        });
+    } catch (e) {
+        // Ignore audio errors
+    }
 }
 
-// Unlock audio on first user touch/click if browser blocked autoplay
+// Unlock audio on first user touch or click
 function unlockAudio() {
     initAudio();
     window.removeEventListener('pointerdown', unlockAudio);
@@ -89,7 +118,7 @@ window.addEventListener('keydown', unlockAudio);
 
 // ================= BACKGROUND PARTICLES & PETALS =================
 const bgParticles = [];
-const TOTAL_BG_PETALS = 40;
+const TOTAL_BG_PETALS = 38;
 
 class AmbientPetal {
     constructor() {
@@ -100,20 +129,20 @@ class AmbientPetal {
         this.x = Math.random() * width;
         this.y = initial ? Math.random() * height : -30;
         this.size = Math.random() * 12 + 8;
-        this.speedY = Math.random() * 1.2 + 0.6;
-        this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+        this.speedY = Math.random() * 1.1 + 0.5;
+        this.speedX = Math.sin(Math.random() * Math.PI) * 0.7;
         this.rotation = Math.random() * 360;
-        this.rotationSpeed = (Math.random() - 0.5) * 1.5;
-        this.opacity = Math.random() * 0.5 + 0.3;
+        this.rotationSpeed = (Math.random() - 0.5) * 1.4;
+        this.opacity = Math.random() * 0.45 + 0.25;
         this.color = Math.random() > 0.4 ? 'rgba(255, 77, 141, ' : 'rgba(255, 140, 180, ';
         this.wobble = Math.random() * Math.PI * 2;
-        this.wobbleSpeed = Math.random() * 0.03 + 0.01;
+        this.wobbleSpeed = Math.random() * 0.025 + 0.01;
     }
 
     update() {
         this.y += this.speedY;
         this.wobble += this.wobbleSpeed;
-        this.x += Math.sin(this.wobble) * 1.2 + this.speedX;
+        this.x += Math.sin(this.wobble) * 1.1 + this.speedX;
         this.rotation += this.rotationSpeed;
 
         if (this.y > height + 40 || this.x < -40 || this.x > width + 40) {
@@ -126,10 +155,9 @@ class AmbientPetal {
         ctx.translate(this.x, this.y);
         ctx.rotate((this.rotation * Math.PI) / 180);
         ctx.fillStyle = `${this.color}${this.opacity})`;
-        ctx.shadowColor = 'rgba(255, 42, 109, 0.4)';
+        ctx.shadowColor = 'rgba(255, 42, 109, 0.35)';
         ctx.shadowBlur = 8;
 
-        // Draw petal shape
         ctx.beginPath();
         ctx.ellipse(0, 0, this.size, this.size * 0.6, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -144,15 +172,13 @@ for (let i = 0; i < TOTAL_BG_PETALS; i++) {
 function renderBackground() {
     bgCtx.clearRect(0, 0, width, height);
 
-    // Subtle dark gradient with warm glow
-    const grad = bgCtx.createRadialGradient(width / 2, height / 2, 80, width / 2, height / 2, width * 0.8);
-    grad.addColorStop(0, '#1c0314');
-    grad.addColorStop(0.5, '#0e010a');
-    grad.addColorStop(1, '#050004');
+    const grad = bgCtx.createRadialGradient(width / 2, height / 2, 70, width / 2, height / 2, width * 0.85);
+    grad.addColorStop(0, '#190212');
+    grad.addColorStop(0.5, '#0b0008');
+    grad.addColorStop(1, '#040003');
     bgCtx.fillStyle = grad;
     bgCtx.fillRect(0, 0, width, height);
 
-    // Render petals
     bgParticles.forEach(p => {
         p.update();
         p.draw(bgCtx);
@@ -169,25 +195,22 @@ class BloomingFlower {
     constructor(x, y, maxPetals = 12) {
         this.x = x;
         this.y = y;
-        this.growth = 0; // 0 to 1
-        this.maxSize = Math.random() * 28 + 24;
-        this.stemHeight = Math.random() * 120 + 80;
-        this.stemProgress = 0;
+        this.growth = 0;
+        this.maxSize = Math.random() * 26 + 22;
         this.petals = maxPetals;
-        this.colorHue = Math.random() * 40 + 330; // 330 to 370 (pink/red range)
-        this.isFullyGrown = false;
+        this.colorHue = Math.random() * 40 + 330;
         this.life = 0;
-        this.maxLife = 600; // frames before fade
+        this.maxLife = 500;
         this.alpha = 1;
     }
 
     update() {
         if (this.growth < 1) {
-            this.growth += 0.035;
+            this.growth += 0.04;
         } else {
             this.life++;
             if (this.life > this.maxLife) {
-                this.alpha -= 0.01;
+                this.alpha -= 0.012;
             }
         }
     }
@@ -201,7 +224,6 @@ class BloomingFlower {
 
         const currentSize = this.maxSize * Math.min(1, this.growth);
 
-        // Petal Layers
         for (let ring = 3; ring >= 1; ring--) {
             const ringPetals = this.petals + ring * 2;
             const ringRadius = currentSize * (ring / 3);
@@ -226,7 +248,6 @@ class BloomingFlower {
             }
         }
 
-        // Glowing center core
         const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, currentSize * 0.3);
         coreGrad.addColorStop(0, '#fff');
         coreGrad.addColorStop(0.5, '#ffd166');
@@ -246,8 +267,7 @@ class BloomingFlower {
 function spawnFlower(x, y) {
     activeFlowers.push(new BloomingFlower(x, y));
     playChime();
-    // Burst particles around bloom
-    createPetalBurst(x, y, 16);
+    createPetalBurst(x, y, 14);
 }
 
 function renderGarden() {
@@ -271,9 +291,9 @@ const fireworks = [];
 
 class FlowerFirework {
     constructor(targetX, targetY) {
-        this.x = targetX || Math.random() * (width - 200) + 100;
+        this.x = targetX || Math.random() * (width - 160) + 80;
         this.y = height;
-        this.targetY = targetY || Math.random() * (height * 0.45) + 80;
+        this.targetY = targetY || Math.random() * (height * 0.42) + 70;
         this.speed = Math.random() * 4 + 11;
         this.exploded = false;
         this.particles = [];
@@ -302,7 +322,6 @@ class FlowerFirework {
         this.exploded = true;
         playChime(659.25);
 
-        // Floral Burst: Multiple Petal Rays
         const petalCount = 8;
         const sparksPerPetal = 12;
 
@@ -316,8 +335,7 @@ class FlowerFirework {
             }
         }
 
-        // Center golden burst
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 18; i++) {
             const angle = Math.random() * Math.PI * 2;
             const speed = Math.random() * 3 + 1;
             this.particles.push(new FWSpark(this.x, this.y, angle, speed, '#ffd166'));
@@ -379,7 +397,7 @@ function launchFireworks(count = 3) {
     for (let i = 0; i < count; i++) {
         setTimeout(() => {
             fireworks.push(new FlowerFirework());
-        }, i * 280);
+        }, i * 260);
     }
 }
 
@@ -407,14 +425,14 @@ class PetalParticle {
         this.x = x;
         this.y = y;
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 6 + 2;
+        const speed = Math.random() * 5.5 + 2;
         this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 1.5;
+        this.vy = Math.sin(angle) * speed - 1.2;
         this.gravity = 0.08;
         this.alpha = 1;
-        this.decay = Math.random() * 0.02 + 0.015;
+        this.decay = Math.random() * 0.02 + 0.014;
         this.char = char;
-        this.size = char ? Math.random() * 12 + 14 : Math.random() * 6 + 4;
+        this.size = char ? Math.random() * 12 + 13 : Math.random() * 6 + 3.5;
         this.rotation = Math.random() * 360;
         this.rotSpeed = (Math.random() - 0.5) * 8;
         this.color = Math.random() > 0.3 ? '#ff2a6d' : '#ffd166';
@@ -473,65 +491,10 @@ function renderParticles() {
 }
 renderParticles();
 
-// ================= WELCOME SPECIAL CELEBRATION =================
-function triggerWelcomeSpecial() {
-    initAudio();
-    playChord();
-    launchFireworks(4);
-
-    const cx = width / 2;
-    const cy = height / 2;
-
-    // Center bloom & rich burst
-    spawnFlower(cx, cy);
-    createPetalBurst(cx, cy, 35);
-    createPetalBurst(cx, cy, 18, '🌸');
-    createPetalBurst(cx, cy, 14, '💖');
-
-    // Surrounding floral sparks
-    setTimeout(() => {
-        const spreadX = Math.min(130, width * 0.22);
-        spawnFlower(cx - spreadX, cy + 50);
-        spawnFlower(cx + spreadX, cy + 50);
-        createPetalBurst(cx - spreadX, cy + 50, 16, '✨');
-        createPetalBurst(cx + spreadX, cy + 50, 16, '✨');
-    }, 350);
-
-    setTimeout(() => {
-        spawnFlower(cx, cy - 80);
-        createPetalBurst(cx, cy - 80, 12, '🌷');
-    }, 700);
-}
-
-// ================= INTERACTIVE CLICK / TOUCH TO BLOOM =================
-const adminModal = document.getElementById('adminModal');
-
-window.addEventListener('pointerdown', (e) => {
-    // Avoid triggering blooms when interacting with docks, headers, modal, or toast
-    if (
-        e.target.closest('.actions-dock') ||
-        e.target.closest('.header') ||
-        e.target.closest('.modal-card') ||
-        e.target.closest('.toast') ||
-        (adminModal && adminModal.classList.contains('open'))
-    ) {
-        return;
-    }
-
-    const x = e.clientX;
-    const y = e.clientY;
-
-    spawnFlower(x, y);
-
-    // Occasional firework trigger on double taps or random intervals
-    if (Math.random() > 0.6) {
-        fireworks.push(new FlowerFirework(x, y - 60));
-    }
-});
-
 // Cursor Sparkle Trail
 let lastTrailTime = 0;
 window.addEventListener('pointermove', (e) => {
+    const adminModal = document.getElementById('adminModal');
     if (adminModal && adminModal.classList.contains('open')) return;
 
     const now = performance.now();
@@ -541,92 +504,113 @@ window.addEventListener('pointermove', (e) => {
     }
 });
 
-// Central Rose Interaction
+// ================= INTERACTION: CLICK SCREEN TO BLOOM =================
+window.addEventListener('pointerdown', (e) => {
+    const adminModal = document.getElementById('adminModal');
+    if (
+        e.target.closest('#envelopeContainer') ||
+        e.target.closest('#envelopeHint') ||
+        e.target.closest('#centerRose') ||
+        e.target.closest('#dateBadge') ||
+        e.target.closest('#btnReplay') ||
+        e.target.closest('#secretAdminBtn') ||
+        e.target.closest('.modal-card') ||
+        (adminModal && adminModal.classList.contains('open'))
+    ) {
+        return;
+    }
+
+    spawnFlower(e.clientX, e.clientY);
+
+    if (Math.random() > 0.65) {
+        fireworks.push(new FlowerFirework(e.clientX, e.clientY - 60));
+    }
+});
+
+// ================= FLOW: ENVELOPE OPENING & REPLAY =================
+const envelopeScene = document.getElementById('envelopeScene');
+const envelopeContainer = document.getElementById('envelopeContainer');
+const envelopeHint = document.getElementById('envelopeHint');
+const cardScene = document.getElementById('cardScene');
+const btnReplay = document.getElementById('btnReplay');
 const centerRose = document.getElementById('centerRose');
-centerRose.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const rect = centerRose.getBoundingClientRect();
+
+let isOpening = false;
+
+function openEnvelope() {
+    if (isOpening) return;
+    isOpening = true;
+
+    // Trigger opening animation on envelope
+    envelopeContainer.classList.add('opening');
+
+    // Crystal melody
+    playCrystalChord();
+
+    // Petal & sparkle bursts at envelope center
+    const rect = envelopeContainer.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-
-    playChord();
-    createPetalBurst(cx, cy, 40);
-    createPetalBurst(cx, cy, 15, '🌸');
+    createPetalBurst(cx, cy, 30);
+    createPetalBurst(cx, cy, 14, '🌸');
     createPetalBurst(cx, cy, 10, '💖');
+
+    // Launch celebratory fireworks
     launchFireworks(4);
-});
 
-// ================= DOCK ACTION BUTTONS =================
-// 1. Flower Storm (Bão Hoa)
-document.getElementById('btnStorm').addEventListener('click', () => {
-    playChord();
-    const stormSymbols = ['🌸', '🌹', '🌷', '🏵️', '🌺'];
-    for (let i = 0; i < 90; i++) {
-        setTimeout(() => {
-            const sym = stormSymbols[Math.floor(Math.random() * stormSymbols.length)];
-            createPetalBurst(Math.random() * width, -20, 1, sym);
-        }, i * 25);
-    }
-});
+    // Transition smoothly to opened card
+    setTimeout(() => {
+        envelopeScene.classList.remove('active');
+        cardScene.classList.add('active');
 
-// 2. Fireworks (Pháo Hoa)
-document.getElementById('btnFireworks').addEventListener('click', () => {
-    launchFireworks(6);
-});
+        // Blooming celebration around card
+        spawnFlower(cx - Math.min(140, width * 0.25), cy + 40);
+        spawnFlower(cx + Math.min(140, width * 0.25), cy + 40);
+        createPetalBurst(cx, cy, 20, '✨');
+        isOpening = false;
+    }, 750);
+}
 
-// 3. Hearts (Mưa Tim)
-document.getElementById('btnHearts').addEventListener('click', () => {
-    playChord();
-    const hearts = ['💖', '💕', '💗', '💓', '💝'];
-    for (let i = 0; i < 60; i++) {
-        setTimeout(() => {
-            const sym = hearts[Math.floor(Math.random() * hearts.length)];
-            createPetalBurst(Math.random() * width, height + 10, 1, sym);
-        }, i * 35);
-    }
-});
+function replayCard() {
+    cardScene.classList.remove('active');
+    envelopeContainer.classList.remove('opening');
+    playChime(392.00);
 
-// 4. Garden (Nở Rộ Vườn Hoa)
-document.getElementById('btnGarden').addEventListener('click', () => {
-    playChord();
-    const count = Math.min(14, Math.floor(width / 90));
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            const x = (width / (count + 1)) * (i + 1) + (Math.random() - 0.5) * 40;
-            const y = height * 0.72 + (Math.random() - 0.5) * (height * 0.18);
-            spawnFlower(x, y);
-        }, i * 140);
-    }
-});
+    setTimeout(() => {
+        envelopeScene.classList.add('active');
+    }, 350);
+}
 
-// 5. Audio Toggle
-const btnAudio = document.getElementById('btnAudio');
-const audioLabel = document.getElementById('audioLabel');
-btnAudio.addEventListener('click', () => {
-    audioEnabled = !audioEnabled;
-    if (audioEnabled) {
-        initAudio();
-        playChime(523.25);
-        btnAudio.classList.remove('active');
-        audioLabel.textContent = 'Nhạc Chuông';
-    } else {
-        btnAudio.classList.add('active');
-        audioLabel.textContent = 'Đã Tắt';
-    }
-});
+if (envelopeContainer) {
+    envelopeContainer.addEventListener('click', openEnvelope);
+}
+if (envelopeHint) {
+    envelopeHint.addEventListener('click', openEnvelope);
+}
+if (btnReplay) {
+    btnReplay.addEventListener('click', replayCard);
+}
 
-// 6. Clear Screen
-document.getElementById('btnClear').addEventListener('click', () => {
-    activeFlowers.length = 0;
-    fireworks.length = 0;
-    clickParticles.length = 0;
-    playChime(261.63);
-});
+// Center Rose Interaction
+if (centerRose) {
+    centerRose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rect = centerRose.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
 
-// ================= RECIPIENT & ADMIN LINK SHARING =================
-const recipientBanner = document.getElementById('recipientBanner');
-const recipientNameText = document.getElementById('recipientNameText');
-const btnAdmin = document.getElementById('btnAdmin');
+        playCrystalChord();
+        createPetalBurst(cx, cy, 35);
+        createPetalBurst(cx, cy, 16, '🌸');
+        createPetalBurst(cx, cy, 12, '💖');
+        launchFireworks(4);
+    });
+}
+
+// ================= RECIPIENT & ADMIN LOGIC =================
+const cardRecipientName = document.getElementById('cardRecipientName');
+const secretAdminBtn = document.getElementById('secretAdminBtn');
+const adminModal = document.getElementById('adminModal');
 const btnCloseModal = document.getElementById('btnCloseModal');
 const adminNameInput = document.getElementById('adminNameInput');
 const previewUrlText = document.getElementById('previewUrlText');
@@ -634,10 +618,10 @@ const btnApplyPreview = document.getElementById('btnApplyPreview');
 const btnCopyLink = document.getElementById('btnCopyLink');
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
+const dateBadge = document.getElementById('dateBadge');
 
 let toastTimeout = null;
 
-// Display Toast Alert for 3 seconds
 function showToast(message, icon = '✅') {
     if (!toast) return;
     if (toastMsg) toastMsg.textContent = message;
@@ -645,14 +629,12 @@ function showToast(message, icon = '✅') {
     if (toastIcon && icon) toastIcon.textContent = icon;
 
     toast.classList.add('show');
-
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
 }
 
-// Get base URL for link sharing
 function getBaseUrl() {
     if (window.location.origin && window.location.origin !== 'null' && window.location.protocol.startsWith('http')) {
         return `${window.location.origin}${window.location.pathname}`;
@@ -660,7 +642,7 @@ function getBaseUrl() {
     return window.location.href.split('?')[0].split('#')[0];
 }
 
-// Generate full shareable URL with ?to= parameter
+// Generate link strictly WITHOUT ?admin=true
 function generateShareUrl(name) {
     const base = getBaseUrl();
     const trimmed = (name || '').trim();
@@ -670,22 +652,20 @@ function generateShareUrl(name) {
     return `${base}?to=${encodeURIComponent(trimmed)}`;
 }
 
-// Update the preview URL text inside Admin modal
 function updatePreviewUrl(name) {
     if (previewUrlText) {
         previewUrlText.textContent = generateShareUrl(name);
     }
 }
 
-// Set Recipient Name and show Banner
 function setRecipient(name) {
-    if (!name) return;
-    if (recipientNameText) recipientNameText.textContent = name;
-    if (recipientBanner) recipientBanner.classList.add('active');
-    document.title = `20/10 🌹 Gửi tặng ${name} | Happy Women's Day`;
+    const resolvedName = (name || '').trim() || 'Người Phụ Nữ Tuyệt Vời';
+    if (cardRecipientName) {
+        cardRecipientName.textContent = resolvedName;
+    }
+    document.title = `20/10 🌹 ${resolvedName} | Happy Women's Day`;
 }
 
-// Parse Query Parameter (?to=... or ?name=...)
 function getRecipientFromUrl() {
     try {
         const params = new URLSearchParams(window.location.search);
@@ -694,7 +674,7 @@ function getRecipientFromUrl() {
         try {
             name = decodeURIComponent(name.replace(/\+/g, ' '));
         } catch (e) {
-            // keep raw name if decoding fails
+            // keep raw
         }
         return name.trim() || null;
     } catch (e) {
@@ -702,14 +682,11 @@ function getRecipientFromUrl() {
     }
 }
 
-// Modal open/close controls
 function openAdminModal() {
     if (!adminModal) return;
 
     if (!adminNameInput.value) {
-        const currentName = (recipientBanner && recipientBanner.classList.contains('active'))
-            ? recipientNameText.textContent.trim()
-            : '';
+        const currentName = cardRecipientName ? cardRecipientName.textContent.trim() : '';
         if (currentName && currentName !== 'Người Phụ Nữ Tuyệt Vời') {
             adminNameInput.value = currentName;
         }
@@ -734,6 +711,41 @@ function closeAdminModal() {
     }
 }
 
+function unlockAdmin() {
+    if (secretAdminBtn) {
+        secretAdminBtn.classList.add('visible');
+    }
+    showToast('👑 Đã mở khóa Bảng Quản Trị Admin!', '✨');
+    setTimeout(() => {
+        openAdminModal();
+    }, 350);
+}
+
+// 5-Click Easter Egg on "20 . 10" badge
+let badgeClickCount = 0;
+let lastBadgeClickTime = 0;
+
+if (dateBadge) {
+    dateBadge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const now = performance.now();
+        if (now - lastBadgeClickTime < 700) {
+            badgeClickCount++;
+        } else {
+            badgeClickCount = 1;
+        }
+        lastBadgeClickTime = now;
+
+        createPetalBurst(e.clientX, e.clientY, 6, '✨');
+        playChime(440 + badgeClickCount * 70);
+
+        if (badgeClickCount >= 5) {
+            badgeClickCount = 0;
+            unlockAdmin();
+        }
+    });
+}
+
 // Fallback clipboard copy
 function fallbackCopyText(text) {
     try {
@@ -747,7 +759,6 @@ function fallbackCopyText(text) {
         tempInput.style.padding = '0';
         tempInput.style.border = 'none';
         tempInput.style.outline = 'none';
-        tempInput.style.boxShadow = 'none';
         tempInput.style.background = 'transparent';
         document.body.appendChild(tempInput);
         tempInput.focus();
@@ -756,15 +767,13 @@ function fallbackCopyText(text) {
         document.body.removeChild(tempInput);
         return success;
     } catch (err) {
-        console.error('Fallback copy error:', err);
         return false;
     }
 }
 
-// Copy link action with navigator.clipboard and fallback
 async function handleCopyLink() {
     const rawName = adminNameInput.value.trim() ||
-        (recipientBanner.classList.contains('active') ? recipientNameText.textContent.trim() : '') ||
+        (cardRecipientName ? cardRecipientName.textContent.trim() : '') ||
         'Người Phụ Nữ Tuyệt Vời';
 
     const base = getBaseUrl();
@@ -789,23 +798,17 @@ async function handleCopyLink() {
     }
 }
 
-// Admin Event Listeners
-if (btnAdmin) {
-    btnAdmin.addEventListener('click', openAdminModal);
+if (secretAdminBtn) {
+    secretAdminBtn.addEventListener('click', openAdminModal);
 }
-
 if (btnCloseModal) {
     btnCloseModal.addEventListener('click', closeAdminModal);
 }
-
 if (adminModal) {
     adminModal.addEventListener('click', (e) => {
-        if (e.target === adminModal) {
-            closeAdminModal();
-        }
+        if (e.target === adminModal) closeAdminModal();
     });
 }
-
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && adminModal && adminModal.classList.contains('open')) {
         closeAdminModal();
@@ -816,7 +819,6 @@ if (adminNameInput) {
     adminNameInput.addEventListener('input', () => {
         updatePreviewUrl(adminNameInput.value);
     });
-
     adminNameInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             if (btnApplyPreview) btnApplyPreview.click();
@@ -839,12 +841,14 @@ if (btnApplyPreview) {
             const base = getBaseUrl();
             const newUrl = `${base}?to=${encodeURIComponent(name)}`;
             window.history.replaceState({}, '', newUrl);
-        } catch (e) {
-            // Handled for restrictive file:// schemes
-        }
+        } catch (e) {}
 
         closeAdminModal();
-        triggerWelcomeSpecial();
+        // Replay opening to see the personalized card bloom
+        replayCard();
+        setTimeout(() => {
+            openEnvelope();
+        }, 400);
         showToast(`Đã áp dụng tặng: "${name}"`, '🌹');
     });
 }
@@ -853,25 +857,27 @@ if (btnCopyLink) {
     btnCopyLink.addEventListener('click', handleCopyLink);
 }
 
-// ================= INITIALIZATION & WELCOME SEQUENCE =================
+// ================= INITIALIZATION =================
+const urlParams = new URLSearchParams(window.location.search);
+const isAdminParam = urlParams.get('admin') === 'true';
 const initialName = getRecipientFromUrl();
 
+// Set initial recipient name
 if (initialName) {
     setRecipient(initialName);
-    if (adminNameInput) {
-        adminNameInput.value = initialName;
-    }
+    if (adminNameInput) adminNameInput.value = initialName;
     updatePreviewUrl(initialName);
-
-    setTimeout(() => {
-        triggerWelcomeSpecial();
-    }, 600);
 } else {
+    setRecipient('Người Phụ Nữ Tuyệt Vời');
     updatePreviewUrl('');
+}
 
+// Handle Admin Query Parameter ?admin=true
+if (isAdminParam) {
+    if (secretAdminBtn) {
+        secretAdminBtn.classList.add('visible');
+    }
     setTimeout(() => {
-        launchFireworks(2);
-        spawnFlower(width * 0.25, height * 0.75);
-        spawnFlower(width * 0.75, height * 0.75);
-    }, 600);
+        openAdminModal();
+    }, 450);
 }
